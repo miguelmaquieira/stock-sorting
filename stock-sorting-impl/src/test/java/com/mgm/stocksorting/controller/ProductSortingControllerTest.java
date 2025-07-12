@@ -2,7 +2,9 @@ package com.mgm.stocksorting.controller;
 
 import java.util.List;
 
+import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -21,6 +23,7 @@ import com.mgm.stocksorting.service.ProductSortingService;
 
 // CSOFF: Javadoc
 @ExtendWith( MockitoExtension.class )
+@TestMethodOrder( MethodOrderer.MethodName.class )
 class ProductSortingControllerTest
 {
     @Mock

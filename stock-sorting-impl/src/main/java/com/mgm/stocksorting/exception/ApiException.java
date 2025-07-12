@@ -35,7 +35,7 @@ import lombok.Getter;
  *   ));
  * }</pre>
  *
- * @author Pulse Innovations Ltd
+ * @author Miguel Maquieira
  */
 public abstract class ApiException extends RuntimeException
 {

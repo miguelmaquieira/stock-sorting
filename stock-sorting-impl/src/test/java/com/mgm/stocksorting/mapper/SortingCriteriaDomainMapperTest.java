@@ -2,7 +2,9 @@ package com.mgm.stocksorting.mapper;
 
 import java.util.Map;
 
+import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.mapstruct.factory.Mappers;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -12,6 +14,7 @@ import com.mgm.stocksorting.controller.model.ProductSortQueryWeightsStockSize;
 import com.mgm.stocksorting.domain.StockSizeDomain;
 
 // CSOFF: Javadoc
+@TestMethodOrder( MethodOrderer.MethodName.class )
 class SortingCriteriaDomainMapperTest
 {
     private final SortingCriteriaMapper mapper = Mappers.getMapper( SortingCriteriaMapper.class );

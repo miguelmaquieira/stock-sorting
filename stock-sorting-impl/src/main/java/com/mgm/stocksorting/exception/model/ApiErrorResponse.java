@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
  * more specific {@link ApiError} objects, providing detailed error information,
  * especially for validation failures.
  *
- * @author Pulse Innovations Ltd
+ * @author Miguel Maquieira
  */
 @Data
 @NoArgsConstructor

@@ -3,7 +3,9 @@ package com.mgm.stocksorting.repository;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.jdbc.Sql;
@@ -17,6 +19,7 @@ import com.mgm.stocksorting.entity.ProductEntity;
 
 // CSOFF: Javadoc
 @DataJpaTest
+@TestMethodOrder( MethodOrderer.MethodName.class )
 class ProductRepositoryTest
 {
 
@@ -24,7 +27,9 @@ class ProductRepositoryTest
     private ProductRepository cut;
 
     @Test
-    void findByIdWhenProductExistShouldSaveAndLoadProduct() {
+    @Sql( scripts = { "/sql/clear-products.sql" } )
+    void findByIdWhenProductExistShouldSaveAndLoadProduct()
+    {
         // Given
         var expectedId = 1L;
         var product = new ProductEntity();
@@ -42,21 +47,22 @@ class ProductRepositoryTest
         assertNotNull( found );
         assertTrue( found.isPresent() );
         var productItem = found.get();
-        assertEquals( "Test T-Shirt" , productItem.getName() );
+        assertEquals( "Test T-Shirt", productItem.getName() );
     }
 
     @Test
+    @Sql( scripts = { "/sql/clear-products.sql" } )
     void findAllWhenThereAreResultsShouldReturnAListOfProducts()
     {
         // Given
         var prod1 = new ProductEntity();
-        prod1.setId( 1L );
+        prod1.setId( 7L );
         prod1.setName( "A" );
         prod1.setSales( 10 );
         prod1.setStock( Map.of( "S", 5, "M", 2, "L", 1 ) );
 
         var prod2 = new ProductEntity();
-        prod2.setId( 2L );
+        prod2.setId( 8L );
         prod2.setName( "B" );
         prod2.setSales( 20 );
         prod2.setStock( Map.of( "S", 1, "M", 3, "L", 4 ) );
@@ -71,9 +77,9 @@ class ProductRepositoryTest
     }
 
     @Test
-    @Sql("/sql/test-data.sql")
-    void shouldLoadProductsFromSqlScript() {
-
+    @Sql( scripts = { "/sql/clear-products.sql", "/sql/test-data.sql" } )
+    void shouldLoadProductsFromSqlScript()
+    {
         var result = cut.findAll();
 
         assertEquals( 6, result.size(), "Should load 6 products" );
