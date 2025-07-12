@@ -1,0 +1,153 @@
+openapi: 3.1.0
+info:
+  title: Product Sorting API
+  description: API to sort products in a T-shirt category based on weighted sorting criteria.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+    description: Local server
+
+paths:
+  /api/v1/products/sorted:
+    post:
+      tags:
+        - Product
+      summary: Get sorted products
+      operationId: getSortedProducts
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductSortQuery'
+      responses:
+        '200':
+          description: Sorted list of products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+        '400':
+          description: Invalid request (e.g. weights do not sum to 1, bad stock_size sum)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                  - error
+              example:
+                error: "Sum of top-level weights must equal 1.0"
+
+components:
+  schemas:
+    ProductSortQuery:
+      type: object
+      properties:
+        weights:
+          type: object
+          description: |
+            Weights for sorting criteria. The sum of top-level weights 
+            (sales + stock) should be 1.0.
+            If stock_size is provided, its values should sum to 1.0.
+          properties:
+            sales:
+              type: number
+              format: double
+              minimum: 0
+              maximum: 1
+              description: Weight for sales criterion
+            stock:
+              type: number
+              format: double
+              minimum: 0
+              maximum: 1
+              description: Weight for stock criterion
+            stock_size:
+              type: object
+              description: Weights for stock per size (optional if stock is provided)
+              properties:
+                S:
+                  type: number
+                  format: double
+                  minimum: 0
+                  maximum: 1
+                M:
+                  type: number
+                  format: double
+                  minimum: 0
+                  maximum: 1
+                L:
+                  type: number
+                  format: double
+                  minimum: 0
+                  maximum: 1
+              required:
+                - S
+                - M
+                - L
+              additionalProperties: false
+          required:
+            - sales
+            - stock
+          additionalProperties: false
+
+        order:
+          type: string
+          description: Whether to sort in ascending or descending order
+          enum: [ asc, desc ]
+          default: desc
+      required:
+        - weights
+      example:
+        weights:
+          sales: 0.4
+          stock: 0.6
+          stock_size:
+            S: 0.25
+            M: 0.5
+            L: 0.25
+        order: asc
+    Product:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique product identifier
+        name:
+          type: string
+          description: Name of the product
+        sales:
+          type: integer
+          description: Number of units sold
+        stock:
+          type: object
+          description: Units in stock per size
+          properties:
+            S:
+              type: integer
+              minimum: 0
+              description: Stock for size Small
+            M:
+              type: integer
+              minimum: 0
+              description: Stock for size Medium
+            L:
+              type: integer
+              minimum: 0
+              description: Stock for size Large
+          required:
+            - S
+            - M
+            - L
+          additionalProperties: false
+      required:
+        - id
+        - name
+        - sales
+        - stock
