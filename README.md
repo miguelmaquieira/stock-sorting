@@ -1,18 +1,46 @@
-# Getting Started
+# 🧮 Stock Sorting API
 
-### Reference Documentation
+This project provides a RESTful API for sorting a list of products based on dynamic, weighted criteria such as **sales units** and **stock levels per size**. It is designed as a multi-module **Spring Boot** application with OpenAPI specification and Docker support.
 
-For further reference, please consider the following sections:
+---
 
-* [Official Apache Maven documentation](https://maven.apache.org/guides/index.html)
-* [Spring Boot Maven Plugin Reference Guide](https://docs.spring.io/spring-boot/3.5.3/maven-plugin)
-* [Create an OCI image](https://docs.spring.io/spring-boot/3.5.3/maven-plugin/build-image.html)
+## 📦 Modules
 
-### Maven Parent overrides
+- **[`stock-sorting-api`](./stock-sorting-api/)** – Contains the OpenAPI 3.0 specification.
+- **[`stock-sorting-impl`](./stock-sorting-impl/)** – Implements the service logic and exposes the API endpoints.
+- **Postman collection** available at [`product_sorting.dev.test_cases.postman_collection.json`](./product_sorting.dev.test_cases.postman_collection.json)
 
-Due to Maven's design, elements are inherited from the parent POM to the project POM.
-While most of the inheritance is fine, it also inherits unwanted elements like `<license>` and `<developers>` from the
-parent.
-To prevent this, the project POM contains empty overrides for these elements.
-If you manually switch to a different parent and actually want the inheritance, you need to remove those overrides.
+---
 
+## 🌐 Live Deployment
+
+The application is deployed and publicly accessible via **Render**:
+
+- 🔗 **Base URL**: [https://stock-sorting.onrender.com](https://stock-sorting.onrender.com)
+- 📄 **Swagger UI**: [https://stock-sorting.onrender.com/swagger-ui.html](https://stock-sorting.onrender.com/swagger-ui.html)
+
+You can interact with the API directly from the Swagger documentation, or import the Postman collection into your workspace.
+
+---
+
+## 🚀 Getting Started Locally
+
+To build and run the application locally using Docker:
+
+```bash
+docker build -t stock-sorting-app .
+docker run -p 8080:8080 stock-sorting-app
+```
+
+The app will be available at http://localhost:8080, and Swagger UI at http://localhost:8080/swagger-ui.html.
+
+## 🧪 Testing
+
+Run tests with:
+```
+mvn clean install -Djib.skip=false
+```
+
+To run integration tests with initial data:
+* Uses H2 in-memory DB
+* Loads test-data.sql automatically for dev/test profiles

@@ -1,18 +1,43 @@
-# Getting Started
+# 🧠 stock-sorting-impl
 
-### Reference Documentation
+This module contains the **implementation** of the Stock Sorting API. It handles the logic for sorting products based on weighted **sales** and **stock ratios** across sizes (`S`, `M`, `L`). The algorithm is designed to be flexible and extensible.
 
-For further reference, please consider the following sections:
+---
 
-* [Official Apache Maven documentation](https://maven.apache.org/guides/index.html)
-* [Spring Boot Maven Plugin Reference Guide](https://docs.spring.io/spring-boot/3.5.3/maven-plugin)
-* [Create an OCI image](https://docs.spring.io/spring-boot/3.5.3/maven-plugin/build-image.html)
+## 📊 Sorting Algorithm
 
-### Maven Parent overrides
+The core of the module is the `DefaultProductSortingAlgorithm`, which computes a score for each product using weighted rules:
 
-Due to Maven's design, elements are inherited from the parent POM to the project POM.
-While most of the inheritance is fine, it also inherits unwanted elements like `<license>` and `<developers>` from the
-parent.
-To prevent this, the project POM contains empty overrides for these elements.
-If you manually switch to a different parent and actually want the inheritance, you need to remove those overrides.
+### ➗ Scoring Formula
+
+```yaml
+final_score = sales_score * weight_sales + stock_score * weight_stock
+```
+- `sales_score` = normalized units sold
+- `stock_score` = normalized total stock units across sizes
+- `weight_sales` and `weight_stock` must sum to **1.0**
+
+Both components are normalized to ensure fair weighting between different product scales.
+
+---
+
+## 🔍 Example
+
+Given:
+- Product A: 100 units sold, stock {S:10, M:5, L:5}
+- Product B: 50 units sold, stock {S:35, M:9, L:9}
+
+And weights:
+```json
+{
+  "sales": 0.6,
+  "stock": 0.4
+}
+```
+
+The service computes scores as:
+
+* sales_score_A = 1.0        (max = 100)
+* stock_score_A = 20/74 ≈ 0.27
+* final_score_A = 1.0 * 0.6 + 0.27 * 0.4 = 0.708
 
