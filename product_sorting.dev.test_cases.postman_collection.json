@@ -209,6 +209,60 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "🛠️ Actuator Info",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{domain}}/actuator/info",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"actuator",
+						"info"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "🩺 Actuator health",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{domain}}/actuator/health",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"actuator",
+						"health"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "📊 Actuator metrics",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{domain}}/actuator/metrics",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"actuator",
+						"metrics"
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"event": [
@@ -236,7 +290,7 @@
 	"variable": [
 		{
 			"key": "domain",
-			"value": "http://localhost:8080",
+			"value": "https://stock-sorting.onrender.com",
 			"type": "string"
 		}
 	]

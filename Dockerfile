@@ -9,4 +9,5 @@ FROM eclipse-temurin:21-jre
 WORKDIR /app
 COPY --from=build /app/stock-sorting-impl/target/*.jar app.jar
 EXPOSE 8080
-ENTRYPOINT ["java", "-Dspring.profiles.active=dev", "-jar", "app.jar"]
+ENTRYPOINT java -Dspring.profiles.active=${SPRING_PROFILES_ACTIVE} -Dlogging.level.com.mgm.stocksorting=${LOGGING_LEVEL} -jar app.jar
+
