@@ -27,7 +27,7 @@ class ScoringRuleSalesTest
     @BeforeEach
     void setUp()
     {
-        cut = new ScoringRuleSales();
+        cut = new ScoringRuleSales( 0.5 );
     }
 
     @Test
@@ -69,10 +69,9 @@ class ScoringRuleSalesTest
     {
         var prod = new ProductDomain( 1L, "A", 300, Map.of() );
         var maxValue = 500.0;
-        double weight = 0.5;
         double expected = ( prod.sales() / maxValue ) * 0.5;
 
-        double score = cut.computeScore( prod, maxValue, weight );
+        double score = cut.computeScore( prod, maxValue );
 
         assertEquals( expected, score );
     }
@@ -82,10 +81,9 @@ class ScoringRuleSalesTest
     {
         var prod = new ProductDomain( 1L, "A", 0, Map.of() );
         var maxValue = 0.0;
-        double weight = 0.5;
         double expected = 0.0;
 
-        double score = cut.computeScore( prod, maxValue, weight );
+        double score = cut.computeScore( prod, maxValue );
 
         assertEquals( expected, score );
     }
@@ -94,15 +92,14 @@ class ScoringRuleSalesTest
     void computeScoreWhenWeightIsNegativeShouldThrowException()
     {
         var prod = new ProductDomain( 1L, "A", 0, Map.of() );
-        double weight = 0.5;
-        assertThrows( IllegalArgumentException.class, () -> cut.computeScore( prod, -1,  weight ) );
+        assertThrows( IllegalArgumentException.class, () -> cut.computeScore( prod, -1 ) );
     }
 
     @Test
     void computeScoreWhenNormalizedValueIsNegativeShouldThrowException()
     {
+        var cut = new ScoringRuleSales( 0.5 );
         var prod = new ProductDomain( 1L, "A", 0, Map.of() );
-        double normalizedValue = 0.5;
-        assertThrows( IllegalArgumentException.class, () -> cut.computeScore( prod, normalizedValue, -1 ) );
+        assertThrows( IllegalArgumentException.class, () -> cut.computeScore( prod, -1 ) );
     }
 }

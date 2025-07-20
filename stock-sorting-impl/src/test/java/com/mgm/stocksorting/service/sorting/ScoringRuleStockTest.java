@@ -3,7 +3,6 @@ package com.mgm.stocksorting.service.sorting;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
@@ -26,17 +25,10 @@ class ScoringRuleStockTest
     private static final double NORMALIZED_VALUE_WITHOUT_STOCK_SIZE = StockSizeDomain.values().length;
     private static final double NORMALIZED_VALUE_DELTA = 0.0001;
 
-    private ScoringRuleStock cut;
-
-    @BeforeEach
-    void setUp()
-    {
-        cut = new ScoringRuleStock( null, false );
-    }
-
     @Test
     void computeNormalizedValueWhenProductListEmptyShouldReturnZero()
     {
+        var cut = new ScoringRuleStock( 0.5, null, false );
         double result = cut.computeNormalizedValue( List.of() );
 
         assertEquals( 0.0, result );
@@ -45,6 +37,7 @@ class ScoringRuleStockTest
     @Test
     void computeNormalizedValueWhenProductListIsNullShouldReturnZero()
     {
+        var cut = new ScoringRuleStock( 0.5, null, false );
         double result = cut.computeNormalizedValue( null );
 
         assertEquals( 0.0, result );
@@ -53,6 +46,7 @@ class ScoringRuleStockTest
     @Test
     void computeNormalizedValueWhenProductListSetAndComputeStockSizeFalseShouldReturnValue()
     {
+        var cut = new ScoringRuleStock( 0.5, null, false );
         double result = cut.computeNormalizedValue( PRODUCTS );
 
         assertEquals( NORMALIZED_VALUE_WITHOUT_STOCK_SIZE, result, NORMALIZED_VALUE_DELTA );
@@ -61,7 +55,7 @@ class ScoringRuleStockTest
     @Test
     void computeNormalizedValueWhenSingleProductAndComputeStockSizeTrueUsingDefaultValuesShouldReturnValue()
     {
-        var cut = new ScoringRuleStock( null, true );
+        var cut = new ScoringRuleStock( 0.5, null, true );
         // coverageRatio = 2/3 weightedStock = 20 * 1/3 + 10 * 1/3 + 0 * 1/3 = 10;
         // Given that we only have PRODUCT_1 the max value will PRODUCT_1 normalized value: 2/3 * 10
         var expectedNormalizedValue = ( double ) 2 / 3 * 10;
@@ -74,7 +68,7 @@ class ScoringRuleStockTest
     @Test
     void computeNormalizedValueWhenProductListAndComputeStockSizeTrueUsingDefaultValuesShouldReturnValue()
     {
-        var cut = new ScoringRuleStock( null, true );
+        var cut = new ScoringRuleStock( 0.5, null, true );
         // PRODUCT_1
         // coverageRatio = 2/3, weightedStock = 20 * 1/3 + 10 * 1/3 + 0 * 1/3 = 10;
         // normalizedValue: 2/3 * 10
@@ -92,7 +86,7 @@ class ScoringRuleStockTest
     @Test
     void computeNormalizedValueWhenSingleProductAndComputeStockSizeTrueShouldReturnValue()
     {
-        var cut = new ScoringRuleStock( STOCK_SIZE_WEIGHTS, true );
+        var cut = new ScoringRuleStock( 0.5, STOCK_SIZE_WEIGHTS, true );
         // coverageRatio = 2/3 weightedStock = 20 * 0.2 + 10 * 0.5 + 0 * 0.3 = 9;
         // Given that we only have PRODUCT_1 the max value will PRODUCT_1 normalized value: 2/3 * 9
         var expectedNormalizedValue = ( double ) 2 / 3 * 9;
@@ -105,7 +99,7 @@ class ScoringRuleStockTest
     @Test
     void computeNormalizedValueWhenProductListAndComputeStockSizeTrueShouldReturnValue()
     {
-        var cut = new ScoringRuleStock( STOCK_SIZE_WEIGHTS, true );
+        var cut = new ScoringRuleStock( 0.5, STOCK_SIZE_WEIGHTS, true );
         // PRODUCT_1
         // coverageRatio = 2/3 weightedStock = 20 * 0.2 + 10 * 0.5 + 0 * 0.3 = 9;
         // Given that we only have PRODUCT_1 the max value will PRODUCT_1 normalized value: 2/3 * 9
@@ -125,7 +119,7 @@ class ScoringRuleStockTest
     {
         var product = new ProductDomain( 3L, "C", 100,
             Map.of( "XL", 10, StockSizeDomain.S.name(), 10 ) ); // "XL" not defined in weights
-        var cut = new ScoringRuleStock( STOCK_SIZE_WEIGHTS, true );
+        var cut = new ScoringRuleStock( 0.5, STOCK_SIZE_WEIGHTS, true );
 
         // coverageRatio = 2/3 weightedStock = 10 * 0.0 + 10 * 0.2 + 0 * 0.5 + 0 * 0.3 = 2;
         // Normalized value: 2/3 * 2 = 4/3
@@ -138,12 +132,14 @@ class ScoringRuleStockTest
     @Test
     void computeScoreWhenNormalizationValueIsZeroShouldReturnZero()
     {
-        var prod = new ProductDomain( 1L, "A", 300, Map.of() );
         double weight = 0.5;
+        var cut = new ScoringRuleStock( weight, STOCK_SIZE_WEIGHTS, true );
+        var prod = new ProductDomain( 1L, "A", 300, Map.of() );
+
         double expected = 0.0;
         var normalizedValue = 0.0;
 
-        double score = cut.computeScore( prod, normalizedValue, weight );
+        double score = cut.computeScore( prod, normalizedValue );
 
         assertEquals( expected, score );
     }
@@ -151,16 +147,15 @@ class ScoringRuleStockTest
     @Test
     void computeScoreWhenWeightIsNegativeShouldThrowException()
     {
-        var prod = new ProductDomain( 1L, "A", 0, Map.of() );
-        double normalizedValue = 0.5;
-        assertThrows( IllegalArgumentException.class, () -> cut.computeScore( prod, normalizedValue, -1 ) );
+        assertThrows( IllegalArgumentException.class, () -> new ScoringRuleStock( -1, null, true ) );
     }
 
     @Test
     void computeScoreWhenNormalizedValueIsNegativeShouldThrowException()
     {
-        var prod = new ProductDomain( 1L, "A", 0, Map.of() );
         double weight = 0.5;
-        assertThrows( IllegalArgumentException.class, () -> cut.computeScore( prod, -1, weight ) );
+        var cut = new ScoringRuleStock( weight, null, true );
+        var prod = new ProductDomain( 1L, "A", 0, Map.of() );
+        assertThrows( IllegalArgumentException.class, () -> cut.computeScore( prod, -1 ) );
     }
 }

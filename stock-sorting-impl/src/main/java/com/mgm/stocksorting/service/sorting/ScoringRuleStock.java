@@ -12,16 +12,18 @@ import com.mgm.stocksorting.domain.StockSizeDomain;
  *
  * @author Miguel Maquieira
  */
-public class ScoringRuleStock implements ScoringRule
+public class ScoringRuleStock extends ScoringRule
 {
     private static final double DEFAULT_NORMALIZED_VALUE = 0.0;
     private static final double NORMALIZED_VALUE_WITHOUT_STOCK_SIZE = StockSizeDomain.values().length;
     private static final double DEFAULT_STOCK_SIZE_WEIGHT = 1.0 / NORMALIZED_VALUE_WITHOUT_STOCK_SIZE;
     private final Map<String, Double> sizeWeights;
-    private final boolean computeStockSize;;
+    private final boolean computeStockSize;
 
-    public ScoringRuleStock( final Map<String, Double> stockSizeMap, final boolean computeStockSize )
+    public ScoringRuleStock( final double weight, final Map<String, Double> stockSizeMap,
+        final boolean computeStockSize )
     {
+        super( weight);
         this.sizeWeights = ( stockSizeMap != null && !stockSizeMap.isEmpty() ) ?
             stockSizeMap :
             Map.of(
@@ -32,16 +34,11 @@ public class ScoringRuleStock implements ScoringRule
     }
 
     @Override
-    public double computeScore( final ProductDomain product, final double normalizationValue, final double weight )
+    public double computeScore( final ProductDomain product, final double normalizationValue )
     {
         if ( normalizationValue < 0 )
         {
             throw new IllegalArgumentException( "Normalization value must be >= 0. Received: " + normalizationValue );
-        }
-
-        if ( weight < 0 )
-        {
-            throw new IllegalArgumentException( "Weight must be >= 0. Received: " + weight );
         }
 
         if ( normalizationValue == DEFAULT_NORMALIZED_VALUE )
@@ -50,7 +47,7 @@ public class ScoringRuleStock implements ScoringRule
         }
         double stockWeighted = computeWeightedStock( product );
         double normalized = stockWeighted / normalizationValue;
-        return normalized * weight;
+        return normalized * getWeight();
     }
 
     @Override

@@ -16,16 +16,9 @@
             }
         ],
         "criteria": {
-            "rules": [
-                {
-                    "type": "sales",
-                    "weight": 0.5
-                },
-                {
-                    "type": "stock",
-                    "weight": 0.5
-                }
-            ],
+            "salesWeight": 0.2,
+            "stockWeight": 0.8,
+            "computeStockSize": false,
             "ascending": true
         },
         "expected": [1, 2]
@@ -53,16 +46,9 @@
             }
         ],
         "criteria": {
-            "rules": [
-                {
-                    "type": "sales",
-                    "weight": 0.2
-                },
-                {
-                    "type": "stock",
-                    "weight": 0.8
-                }
-            ],
+            "salesWeight": 0.2,
+            "stockWeight": 0.8,
+            "computeStockSize": false,
             "ascending": true
         },
         "expected": [1, 3, 2]
@@ -90,16 +76,9 @@
             }
         ],
         "criteria": {
-            "rules": [
-                {
-                    "type": "sales",
-                    "weight": 0.9
-                },
-                {
-                    "type": "stock",
-                    "weight": 0.1
-                }
-            ],
+            "salesWeight": 0.9,
+            "stockWeight": 0.1,
+            "computeStockSize": false,
             "ascending": true
         },
         "expected": [3, 2, 1]
@@ -133,16 +112,9 @@
             }
         ],
         "criteria": {
-            "rules": [
-                {
-                    "type": "sales",
-                    "weight": 0.9
-                },
-                {
-                    "type": "stock",
-                    "weight": 0.1
-                }
-            ],
+            "salesWeight": 0.9,
+            "stockWeight": 0.1,
+            "computeStockSize": false,
             "ascending": true
         },
         "expected": [4, 3, 2, 1]
@@ -164,19 +136,6 @@
             }
         ],
         "criteria": {
-            "rules": [
-                {
-                    "type": "sales",
-                    "weight": 0.5
-                },
-                {
-                    "type": "stock",
-                    "weight": 0.5
-                }
-            ],
-            "ascending": false
-        },
-        "criteria": {
             "salesWeight": 0.5,
             "stockWeight": 0.5,
             "stockSizeWeights": {
@@ -188,5 +147,34 @@
             "ascending": false
         },
         "expected": [2, 1]
+    },
+    {
+        "name": "should_sort_by_sales_and_stock_compute_stock_asc",
+        "input": [
+            {
+                "id": 1,
+                "name": "A",
+                "sales": 100,
+                "stock": { "S": 20, "M": 10, "L": 0 }
+            },
+            {
+                "id": 2,
+                "name": "B",
+                "sales": 150,
+                "stock": { "S": 10, "M": 2, "L": 30 }
+            }
+        ],
+        "criteria": {
+            "salesWeight": 0.5,
+            "stockWeight": 0.5,
+            "stockSizeWeights": {
+                "S": 0.2,
+                "M": 0.5,
+                "L": 0.3
+            },
+            "computeStockSize": true,
+            "ascending": true
+        },
+        "expected": [1, 2]
     }
 ]
