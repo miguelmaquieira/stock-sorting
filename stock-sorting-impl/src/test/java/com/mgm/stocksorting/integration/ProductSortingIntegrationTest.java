@@ -1,6 +1,5 @@
 package com.mgm.stocksorting.integration;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -14,6 +13,7 @@ import com.mgm.stocksorting.controller.model.Product;
 import com.mgm.stocksorting.controller.model.ProductSortQuery;
 import com.mgm.stocksorting.controller.model.ProductSortQueryWeights;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -45,6 +45,6 @@ public class ProductSortingIntegrationTest
         var resultJson = response.getResponse().getContentAsString();
         var products = mapper.readerForListOf( Product.class ).readValue( resultJson );
 
-        Assertions.assertNotNull( products );
+        assertNotNull( products );
     }
 }

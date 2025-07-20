@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
@@ -32,48 +33,47 @@ class ProductSortingAlgorithmImplTest
     @BeforeEach
     void setUp()
     {
-        var sortingStrategy =  new SortingStrategyScore();
-        cut = new ProductSortingAlgorithmImpl( sortingStrategy );
+        cut = new ProductSortingAlgorithmImpl( new SortingStrategyScore() );
     }
 
-    @ParameterizedTest( name = "{index} => {0}" )
+    @ParameterizedTest( name = "{index} - {0}" )
     @MethodSource( "testCasesProvider" )
-    void shouldSortProductsPerTestCase( final ProductSortingAlgorithmImplTest.TestCase testCase )
+    void testSortingFromJson( final TestCase testCase )
     {
-        var rules = convertToScoringRules( testCase.criteria.rules );
-        var result = cut.sort( testCase.input,rules,  testCase.criteria.ascending );
-        var resultIds = result.stream().map( ProductDomain::id ).toList();
+        // Arrange
+        List<ProductDomain> products =
+            testCase.input.stream().map( p -> new ProductDomain( p.id(), p.name(), p.sales(), p.stock() ) ).toList();
 
-        assertEquals( testCase.expected, resultIds, "Failed test: " + testCase.name );
-    }
-
-    private Set<ScoringRule> convertToScoringRules( final Set<TestRawScoringRuleDTO> rawRules )
-    {
-        return rawRules.stream().map( raw -> switch ( raw.getType() )
+        Set<ScoringRule> rules = testCase.criteria.rules.stream().map( r -> switch ( r.type.toUpperCase() )
         {
-            case "sales" -> new ScoringRuleSales( raw.getWeight() );
-            case "stock" -> {
-                var stockRule = new ScoringRuleStock( raw.getWeight(), null, false );;
-            }
-            default -> throw new IllegalArgumentException( "Unknown rule type: " + raw.getType() );
+            case "SALES" -> new ScoringRuleSales( r.weight );
+            case "STOCK" -> new ScoringRuleStock( r.weight, r.sizeWeights != null ? r.sizeWeights : Map.of(),
+                r.computeStockSize != null && r.computeStockSize );
+            default -> throw new IllegalArgumentException( "Unsupported rule type: " + r.type );
         } ).collect( Collectors.toSet() );
+
+        // Act
+        List<ProductDomain> sorted = cut.sort( products, rules, testCase.criteria.ascending );
+
+        // Assert
+        var actualOrder = sorted.stream().map( ProductDomain::id ).toList();
+        assertEquals( testCase.expected, actualOrder, testCase.name );
     }
 
-    static List<TestCase> testCasesProvider() throws Exception
+    static Stream<TestCase> testCasesProvider() throws Exception
     {
-        try ( InputStream input = ProductSortingAlgorithmImplTest.class.getResourceAsStream(
-            "/sorting/sorting_test_cases.json" ) )
+        InputStream is =
+            ProductSortingAlgorithmImplTest.class.getResourceAsStream( "/sorting/sorting_test_cases.json" );
+        List<TestCase> cases = MAPPER.readValue( is, new TypeReference<>()
         {
-            return MAPPER.readValue( input, new TypeReference<>()
-            {
-            } );
-        }
+        } );
+        return cases.stream();
     }
 
     @Test
     void sortWhenProductListIsEmptyShouldReturnAnEmptyList()
     {
-        var result = cut.sort( List.of(),Set.of(), false );
+        var result = cut.sort( List.of(), Set.of(), false );
         assertNotNull( result );
         assertTrue( result.isEmpty() );
     }
@@ -114,17 +114,17 @@ class ProductSortingAlgorithmImplTest
     @NoArgsConstructor
     private static class TestSortingCriteria
     {
-        private Set<TestRawScoringRuleDTO> rules;
+        private Set<TestScoringRule> rules;
         private boolean ascending;
     }
 
     @Data
     @NoArgsConstructor
-    private static class TestRawScoringRuleDTO
+    private static class TestScoringRule
     {
-        private String type;
-        private double weight;
+        public String type;
+        public double weight;
+        public Map<String, Double> sizeWeights;
+        public Boolean computeStockSize;
     }
-
-
 }

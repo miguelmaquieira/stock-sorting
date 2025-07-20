@@ -3,7 +3,8 @@ package com.mgm.stocksorting.service.sorting;
 import java.util.Set;
 
 /**
- * Please add your description here.
+ * Utility class that performs sanity checks on a collection of {@link ScoringRule} instances
+ * before they are used in score calculation or product sorting.
  *
  * @author Miguel Maquieira
  */

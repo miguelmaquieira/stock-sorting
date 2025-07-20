@@ -9,7 +9,13 @@ import org.springframework.stereotype.Component;
 import com.mgm.stocksorting.domain.ProductDomain;
 
 /**
- * Please add your description here.
+ * Default implementation of {@link SortingStrategy} that orders products
+ * based on their computed scores.
+ *
+ * <p>This strategy performs a simple sort over the input score map:
+ * products are ordered in either ascending or descending order of their
+ * associated score values. No tie-breaking logic is applied — the natural
+ * iteration order of equal scores is preserved.</p>
  *
  * @author Miguel Maquieira
  */
